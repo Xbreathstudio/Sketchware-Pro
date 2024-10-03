@@ -5,8 +5,11 @@ import static com.besome.sketch.beans.QuizBean.QUIZ_TRUE;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -26,10 +29,17 @@ public class QuizBoard extends LinearLayout implements View.OnClickListener {
     private QuizBean quizBean;
     private a s;
     private QuizBoardBinding quizBinding;
+    private Vibrator vibrator; // Add Vibrator field
 
     public QuizBoard(Context context) {
         super(context);
         initialize(context);
+    }
+
+    private void initialize(Context context) {
+        quizBinding = QuizBoardBinding.inflate(((Activity) context).getLayoutInflater(), this, true);
+        vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE); // Initialize vibrator
+        g();
     }
 
     private void setData(QuizBean quizBean) {
@@ -75,11 +85,6 @@ public class QuizBoard extends LinearLayout implements View.OnClickListener {
         }
     }
 
-    private void initialize(Context context) {
-        quizBinding = QuizBoardBinding.inflate(((Activity) context).getLayoutInflater(), this, true);
-        g();
-    }
-
     public void b() {
         if (q == null || q.isEmpty()) {
             q = tq.a();
@@ -106,11 +111,23 @@ public class QuizBoard extends LinearLayout implements View.OnClickListener {
         quizBinding.imgAnswerB.setVisibility(View.GONE);
     }
 
+    // Method to trigger vibration
+    private void vibrate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Vibration for 250ms
+            vibrator.vibrate(VibrationEffect.createOneShot(250, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            // For older versions
+            vibrator.vibrate(250);
+        }
+    }
+
     private void setXOResult(int answer) {
         if (answer == QUIZ_TRUE) {
             mB.a(quizBinding.imgAnswerO, 1);
             mB.a(quizBinding.imgAnswerX, 0);
             quizBinding.imgAnswerX.setVisibility(View.GONE);
+            vibrate(); // Vibrate if the answer is correct
         } else {
             mB.a(quizBinding.imgAnswerO, 0);
             mB.a(quizBinding.imgAnswerX, 1);
@@ -122,6 +139,7 @@ public class QuizBoard extends LinearLayout implements View.OnClickListener {
     private void setABResult(int answer) {
         if (answer == QUIZ_ANSWER_A) {
             quizBinding.imgAnswerA.setVisibility(View.VISIBLE);
+            vibrate(); // Vibrate if answer A is correct
         } else {
             quizBinding.imgAnswerB.setVisibility(View.VISIBLE);
         }
@@ -168,9 +186,6 @@ public class QuizBoard extends LinearLayout implements View.OnClickListener {
             if (id == R.id.img_answer_o || id == R.id.img_answer_x || id == R.id.view_answer_a || id == R.id.view_answer_b) {
                 f();
             }
-            if (quizBean.type == 2) {
-                var1.getId();
-            }
         }
     }
 
@@ -187,4 +202,4 @@ public class QuizBoard extends LinearLayout implements View.OnClickListener {
             (new Handler()).post(() -> quizBinding.tvRemaingTime.setText(String.valueOf(millisUntilFinished / 1000L + 1L)));
         }
     }
-}
+                }
