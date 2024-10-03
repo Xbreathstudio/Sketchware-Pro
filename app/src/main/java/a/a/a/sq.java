@@ -312,7 +312,7 @@ z = new ColorBean[]{
 };
 
 // AMBER color category (aa array)
-aa = new ColorBean[]{
+A = new ColorBean[]{
     new ColorBean("#FFC107", "AMBER", "#ffffff", R.drawable.checked_white_32),
     new ColorBean("#FFF8E1", "AMBER", "#212121", R.drawable.checked_grey_32),
     new ColorBean("#FFECB3", "AMBER", "#212121", R.drawable.checked_grey_32),
@@ -334,7 +334,7 @@ aa = new ColorBean[]{
 };
 
 // ORANGE color category (bb array)
-bb = new ColorBean[]{
+B = new ColorBean[]{
     new ColorBean("#FF9800", "ORANGE", "#ffffff", R.drawable.checked_white_32),
     new ColorBean("#FFF3E0", "ORANGE", "#212121", R.drawable.checked_grey_32),
     new ColorBean("#FFE0B2", "ORANGE", "#212121", R.drawable.checked_grey_32),
@@ -356,7 +356,7 @@ bb = new ColorBean[]{
 };
 
 // DEEP ORANGE color category (cc array)
-cc = new ColorBean[]{
+C = new ColorBean[]{
     new ColorBean("#FF5722", "DEEP ORANGE", "#ffffff", R.drawable.checked_white_32),
     new ColorBean("#FBE9E7", "DEEP ORANGE", "#212121", R.drawable.checked_grey_32),
     new ColorBean("#FFCCBC", "DEEP ORANGE", "#212121", R.drawable.checked_grey_32),
@@ -376,7 +376,7 @@ cc = new ColorBean[]{
     new ColorBean("#A52A2A", "DEEP ORANGE", "#ffffff", R.drawable.checked_white_32),
     new ColorBean("#B22222", "DEEP ORANGE", "#ffffff", R.drawable.checked_white_32)
 };
-dd = new ColorBean[]{
+D = new ColorBean[]{
     new ColorBean("#795548", "BROWN", "#ffffff", R.drawable.checked_white_32),
     new ColorBean("#EFEBE9", "BROWN", "#212121", R.drawable.checked_grey_32),
     new ColorBean("#D7CCC8", "BROWN", "#212121", R.drawable.checked_grey_32),
@@ -394,7 +394,7 @@ dd = new ColorBean[]{
 };
 
 // GREY color category (ee array)
-ee = new ColorBean[]{
+E = new ColorBean[]{
     new ColorBean("#9E9E9E", "GREY", "#212121", R.drawable.checked_grey_32),
     new ColorBean("#FAFAFA", "GREY", "#212121", R.drawable.checked_grey_32),
     new ColorBean("#F5F5F5", "GREY", "#212121", R.drawable.checked_grey_32),
@@ -412,7 +412,7 @@ ee = new ColorBean[]{
 };
 
 // BLUE GREY color category (ff array)
-ff = new ColorBean[]{
+F = new ColorBean[]{
     new ColorBean("#607D8B", "BLUE GREY", "#ffffff", R.drawable.checked_white_32),
     new ColorBean("#ECEFF1", "BLUE GREY", "#212121", R.drawable.checked_grey_32),
     new ColorBean("#CFD8DC", "BLUE GREY", "#212121", R.drawable.checked_grey_32),
