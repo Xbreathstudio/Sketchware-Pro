@@ -19,12 +19,6 @@ public class sq {
     public static ColorBean[] D;
     public static ColorBean[] E;
     public static ColorBean[] F;
-    public static ColorBean[] G;
-    public static ColorBean[] H;
-    public static ColorBean[] I;
-    public static ColorBean[] J;
-    public static ColorBean[] K;
-    public static ColorBean[] L;
     public static int[] M;
     public static Pair<Integer, String>[] a;
     public static Pair<Integer, String>[] b;
