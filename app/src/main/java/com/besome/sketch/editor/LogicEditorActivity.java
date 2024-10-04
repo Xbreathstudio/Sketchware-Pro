@@ -73,6 +73,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import a.a.a.DB;
 import a.a.a.FB;
@@ -153,13 +155,22 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements View.O
     private boolean G, u, W, X, da, ea, ha, ia;
     private final Runnable aa = this::r;
 
-    private void loadEventBlocks() {
-        ArrayList<BlockBean> eventBlocks = jC.a(B).a(M.getJavaName(), C + "_" + D);
-        if (eventBlocks != null) {
-            if (eventBlocks.isEmpty()) {
-                e(X);
-            }
+    // Create an executor service for background tasks
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    private void loadEventBlocks() {
+        // Run the block loading in a background thread
+        executorService.execute(() -> {
+            ArrayList<BlockBean> eventBlocks = jC.a(B).a(M.getJavaName(), C + "_" + D);
+            if (eventBlocks != null) {
+                if (eventBlocks.isEmpty()) {
+                    // UI update must run on the main thread
+                    runOnUiThread(() -> e(X));
+                }
+            }
+        });
+    }
+}
             boolean needToFindRoot = true;
             HashMap<Integer, Rs> blockIdsAndBlocks = new HashMap<>();
             for (BlockBean next : eventBlocks) {
