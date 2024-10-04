@@ -161,7 +161,7 @@ private final ExecutorService executorService = Executors.newSingleThreadExecuto
     private void loadEventBlocks() {
     executorService.execute(() -> {
         ArrayList<BlockBean> eventBlocks = jC.a(B).a(M.getJavaName(), C + "_" + D);
-        
+
         // Run on the UI thread if no blocks to process
         if (eventBlocks == null || eventBlocks.isEmpty()) {
             runOnUiThread(() -> e(X));
@@ -178,8 +178,9 @@ private final ExecutorService executorService = Executors.newSingleThreadExecuto
             }
 
             Rs block = b(next);
-            blockIdsAndBlocks.put(block.getTag(), block);
-            o.g = Math.max(o.g, block.getTag() + 1);
+            Integer tag = (Integer) block.getTag(); // Cast to Integer
+            blockIdsAndBlocks.put(tag, block);
+            o.g = Math.max(o.g, tag + 1); // Use the cast tag here
             o.a(block, 0, 0);
             block.setOnTouchListener(this);
 
@@ -207,7 +208,6 @@ private final ExecutorService executorService = Executors.newSingleThreadExecuto
         });
     });
 }
-
 private void connectSubStacks(BlockBean next2, Rs block, HashMap<Integer, Rs> blockIdsAndBlocks) {
     Rs subStack1RootBlock = blockIdsAndBlocks.get(next2.subStack1);
     if (subStack1RootBlock != null) {
