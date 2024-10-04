@@ -157,10 +157,18 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements View.O
     private final Runnable aa = this::r;
 
     private void loadEventBlocks() {
+    // Run the loading process asynchronously to prevent blocking the main thread
+    new Thread(() -> {
+        // Fetch event blocks
         ArrayList<BlockBean> eventBlocks = jC.a(B).a(M.getJavaName(), C + "_" + D);
+        
         if (eventBlocks != null) {
             if (eventBlocks.isEmpty()) {
-                e(X);
+                // Handle the case where eventBlocks is empty
+                e(X); // Assuming 'e(X)' is some handling logic
+            }
+        }
+    }).start(); 
     }
             boolean needToFindRoot = true;
             HashMap<Integer, Rs> blockIdsAndBlocks = new HashMap<>();
