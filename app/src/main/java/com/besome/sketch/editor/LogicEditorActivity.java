@@ -66,6 +66,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.sketchware.remod.R;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -152,72 +155,92 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements View.O
     private View Y;
     private boolean G, u, W, X, da, ea, ha, ia;
     private final Runnable aa = this::r;
+private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
 
     private void loadEventBlocks() {
-        new Thread(() -> {
-            ArrayList<BlockBean> eventBlocks = jC.a(B).a(M.getJavaName(), C + "_" + D);
-            if (eventBlocks != null) {
-                if (eventBlocks.isEmpty()) {
-                    e(X);
-                }
-            }
-        }).start();
-    }
-    
-    // Additional methods and logic for LogicEditorActivity can be added here
+    executorService.execute(() -> {
+        ArrayList<BlockBean> eventBlocks = jC.a(B).a(M.getJavaName(), C + "_" + D);
+        
+        // Run on the UI thread if no blocks to process
+        if (eventBlocks == null || eventBlocks.isEmpty()) {
+            runOnUiThread(() -> e(X));
+            return; // Early return if no blocks to process
+        }
 
+        boolean needToFindRoot = true;
+        HashMap<Integer, Rs> blockIdsAndBlocks = new HashMap<>();
 
-            boolean needToFindRoot = true;
-            HashMap<Integer, Rs> blockIdsAndBlocks = new HashMap<>();
-            for (BlockBean next : eventBlocks) {
-                if (D.equals("onTextChanged") && next.opCode.equals("getArg") && next.spec.equals("text")) {
-                    next.spec = "charSeq";
-                }
-                Rs b2 = b(next);
-                blockIdsAndBlocks.put((Integer) b2.getTag(), b2);
-                o.g = Math.max(o.g, (Integer) b2.getTag() + 1);
-                o.a(b2, 0, 0);
-                b2.setOnTouchListener(this);
-                if (needToFindRoot) {
-                    o.getRoot().b(b2);
-                    needToFindRoot = false;
-                }
+        for (BlockBean next : eventBlocks) {
+            // Update spec if onTextChanged and opCode is getArg
+            if ("onTextChanged".equals(D) && "getArg".equals(next.opCode) && "text".equals(next.spec)) {
+                next.spec = "charSeq";
             }
-            for (BlockBean next2 : eventBlocks) {
-                Rs block = blockIdsAndBlocks.get(Integer.valueOf(next2.id));
-                if (block != null) {
-                    Rs subStack1RootBlock;
-                    if (next2.subStack1 >= 0 && (subStack1RootBlock = blockIdsAndBlocks.get(next2.subStack1)) != null) {
-                        block.e(subStack1RootBlock);
-                    }
-                    Rs subStack2RootBlock;
-                    if (next2.subStack2 >= 0 && (subStack2RootBlock = blockIdsAndBlocks.get(next2.subStack2)) != null) {
-                        block.f(subStack2RootBlock);
-                    }
-                    Rs nextBlock;
-                    if (next2.nextBlock >= 0 && (nextBlock = blockIdsAndBlocks.get(next2.nextBlock)) != null) {
-                        block.b(nextBlock);
-                    }
-                    for (int i = 0; i < next2.parameters.size(); i++) {
-                        String parameter = next2.parameters.get(i);
-                        if (parameter != null && parameter.length() > 0) {
-                            if (parameter.charAt(0) == '@') {
-                                Rs parameterBlock = blockIdsAndBlocks.get(Integer.valueOf(parameter.substring(1)));
-                                if (parameterBlock != null) {
-                                    block.a((Ts) block.V.get(i), parameterBlock);
-                                }
-                            } else {
-                                ((Ss) block.V.get(i)).setArgValue(parameter);
-                                block.m();
-                            }
-                        }
-                    }
-                }
+
+            Rs block = b(next);
+            blockIdsAndBlocks.put(block.getTag(), block);
+            o.g = Math.max(o.g, block.getTag() + 1);
+            o.a(block, 0, 0);
+            block.setOnTouchListener(this);
+
+            // Find root block
+            if (needToFindRoot) {
+                o.getRoot().b(block);
+                needToFindRoot = false;
             }
+        }
+
+        for (BlockBean next2 : eventBlocks) {
+            Rs block = blockIdsAndBlocks.get(next2.id);
+            if (block == null) continue; // Skip if block is not found
+
+            // Connect sub stacks
+            connectSubStacks(next2, block, blockIdsAndBlocks);
+
+            // Set parameter values
+            setParameterValues(next2, block, blockIdsAndBlocks);
+        }
+
+        runOnUiThread(() -> {
             o.getRoot().k();
             o.b();
+        });
+    });
+}
+
+private void connectSubStacks(BlockBean next2, Rs block, HashMap<Integer, Rs> blockIdsAndBlocks) {
+    Rs subStack1RootBlock = blockIdsAndBlocks.get(next2.subStack1);
+    if (subStack1RootBlock != null) {
+        block.e(subStack1RootBlock);
+    }
+
+    Rs subStack2RootBlock = blockIdsAndBlocks.get(next2.subStack2);
+    if (subStack2RootBlock != null) {
+        block.f(subStack2RootBlock);
+    }
+
+    Rs nextBlock = blockIdsAndBlocks.get(next2.nextBlock);
+    if (nextBlock != null) {
+        block.b(nextBlock);
+    }
+}
+
+private void setParameterValues(BlockBean next2, Rs block, HashMap<Integer, Rs> blockIdsAndBlocks) {
+    for (int i = 0; i < next2.parameters.size(); i++) {
+        String parameter = next2.parameters.get(i);
+        if (parameter == null || parameter.isEmpty()) continue; // Skip null or empty parameters
+
+        if (parameter.charAt(0) == '@') {
+            Rs parameterBlock = blockIdsAndBlocks.get(Integer.valueOf(parameter.substring(1)));
+            if (parameterBlock != null) {
+                block.a((Ts) block.V.get(i), parameterBlock);
+            }
+        } else {
+            ((Ss) block.V.get(i)).setArgValue(parameter);
+            block.m();
         }
     }
+}
 
     private void redo() {
         if (!u) {
