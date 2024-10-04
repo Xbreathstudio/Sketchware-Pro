@@ -119,9 +119,6 @@ import mod.hey.studios.util.Helper;
 import mod.hilal.saif.asd.asdforall.AsdAllEditor;
 import mod.jbk.editor.manage.MoreblockImporter;
 import mod.jbk.util.BlockUtil;
-import java.lang.Runnable;        // Optional, generally automatically imported.
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;  // If using an Executor for threading.
 
 @SuppressLint({"ClickableViewAccessibility", "RtlHardcoded", "SetTextI18n", "DefaultLocale"})
 public class LogicEditorActivity extends BaseAppCompatActivity implements View.OnClickListener, Vs, View.OnTouchListener, MoreblockImporterDialog.CallBack {
@@ -157,19 +154,19 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements View.O
     private final Runnable aa = this::r;
 
     private void loadEventBlocks() {
-    // Run the loading process asynchronously to prevent blocking the main thread
-    new Thread(() -> {
-        // Fetch event blocks
-        ArrayList<BlockBean> eventBlocks = jC.a(B).a(M.getJavaName(), C + "_" + D);
-        
-        if (eventBlocks != null) {
-            if (eventBlocks.isEmpty()) {
-                // Handle the case where eventBlocks is empty
-                e(X); // Assuming 'e(X)' is some handling logic
+        new Thread(() -> {
+            ArrayList<BlockBean> eventBlocks = jC.a(B).a(M.getJavaName(), C + "_" + D);
+            if (eventBlocks != null) {
+                if (eventBlocks.isEmpty()) {
+                    e(X);
+                }
             }
-        }
-    }).start(); 
+        }).start();
     }
+    
+    // Additional methods and logic for LogicEditorActivity can be added here
+
+
             boolean needToFindRoot = true;
             HashMap<Integer, Rs> blockIdsAndBlocks = new HashMap<>();
             for (BlockBean next : eventBlocks) {
