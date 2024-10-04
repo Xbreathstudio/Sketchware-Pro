@@ -162,10 +162,10 @@ private final ExecutorService executorService = Executors.newSingleThreadExecuto
     executorService.execute(() -> {
         // Fetch event blocks from the data source
         ArrayList<BlockBean> eventBlocks = jC.a(B).a(M.getJavaName(), C + "_" + D);
-        
-        // Run on the UI thread if no blocks to process
+
+        // Check for null or empty event blocks
         if (eventBlocks == null || eventBlocks.isEmpty()) {
-            runOnUiThread(() -> e(X));
+            runOnUiThread(() -> e(X)); // Run on UI thread if no blocks to process
             return; // Early return if no blocks to process
         }
 
@@ -181,18 +181,25 @@ private final ExecutorService executorService = Executors.newSingleThreadExecuto
             // Create a new block from the next BlockBean
             Rs block = b(next);
             Integer tag = (Integer) block.getTag(); // Cast to Integer
+
+            // Collect blocks in a map
             blockIdsAndBlocks.put(tag, block);
             o.g = Math.max(o.g, tag + 1); // Use the cast tag here
+
+            // Set the block properties
             o.a(block, 0, 0);
             block.setOnTouchListener(this);
 
-            // Find root block and ensure this runs on the UI thread
+            // Ensure UI updates are run on the UI thread
             if (needToFindRoot) {
-                runOnUiThread(() -> o.getRoot().b(block));
-                needToFindRoot = false;
+                runOnUiThread(() -> {
+                    o.getRoot().b(block); // Add block to the root
+                });
+                needToFindRoot = false; // Set to false after finding root
             }
         }
 
+        // Process second pass to connect sub stacks and set parameter values
         for (BlockBean next2 : eventBlocks) {
             Rs block = blockIdsAndBlocks.get(next2.id);
             if (block == null) continue; // Skip if block is not found
@@ -204,13 +211,13 @@ private final ExecutorService executorService = Executors.newSingleThreadExecuto
             setParameterValues(next2, block, blockIdsAndBlocks);
         }
 
-        // Ensure all final UI updates are on the UI thread
+        // Final UI updates should also be on the main thread
         runOnUiThread(() -> {
             o.getRoot().k(); // Call a method on the root block
             o.b();           // Perform another UI update
         });
     });
-    }
+}
 private void connectSubStacks(BlockBean next2, Rs block, HashMap<Integer, Rs> blockIdsAndBlocks) {
     Rs subStack1RootBlock = blockIdsAndBlocks.get(next2.subStack1);
     if (subStack1RootBlock != null) {
