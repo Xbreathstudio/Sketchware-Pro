@@ -160,8 +160,9 @@ private final ExecutorService executorService = Executors.newSingleThreadExecuto
 
     private void loadEventBlocks() {
     executorService.execute(() -> {
+        // Fetch event blocks from the data source
         ArrayList<BlockBean> eventBlocks = jC.a(B).a(M.getJavaName(), C + "_" + D);
-
+        
         // Run on the UI thread if no blocks to process
         if (eventBlocks == null || eventBlocks.isEmpty()) {
             runOnUiThread(() -> e(X));
@@ -177,6 +178,7 @@ private final ExecutorService executorService = Executors.newSingleThreadExecuto
                 next.spec = "charSeq";
             }
 
+            // Create a new block from the next BlockBean
             Rs block = b(next);
             Integer tag = (Integer) block.getTag(); // Cast to Integer
             blockIdsAndBlocks.put(tag, block);
@@ -184,9 +186,9 @@ private final ExecutorService executorService = Executors.newSingleThreadExecuto
             o.a(block, 0, 0);
             block.setOnTouchListener(this);
 
-            // Find root block
+            // Find root block and ensure this runs on the UI thread
             if (needToFindRoot) {
-                o.getRoot().b(block);
+                runOnUiThread(() -> o.getRoot().b(block));
                 needToFindRoot = false;
             }
         }
@@ -202,12 +204,13 @@ private final ExecutorService executorService = Executors.newSingleThreadExecuto
             setParameterValues(next2, block, blockIdsAndBlocks);
         }
 
+        // Ensure all final UI updates are on the UI thread
         runOnUiThread(() -> {
-            o.getRoot().k();
-            o.b();
+            o.getRoot().k(); // Call a method on the root block
+            o.b();           // Perform another UI update
         });
     });
-}
+    }
 private void connectSubStacks(BlockBean next2, Rs block, HashMap<Integer, Rs> blockIdsAndBlocks) {
     Rs subStack1RootBlock = blockIdsAndBlocks.get(next2.subStack1);
     if (subStack1RootBlock != null) {
